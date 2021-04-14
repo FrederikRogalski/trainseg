@@ -192,7 +192,7 @@ for path, in0, img, vid_cap in tqdm(dl):
     if single:
       zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
     if snake:
-      zeros = get_track_length(zeros, (200,110,0))
+      zeros = get_track_length(zeros, (220,110,0))
     if zeros[:stopAt].max()>0:
       text="Freie Fahrt"
       color=(0,255,0)
