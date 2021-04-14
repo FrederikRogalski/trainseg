@@ -16,6 +16,7 @@ parser.add_argument("--model", default="./trainseg_quantv1.0_edgetpu.tflite")
 parser.add_argument("--view", default="segmentation")
 parser.add_argument("--single", action='store_true')
 parser.add_argument("--stopAt", type=int, default=140)
+parser.add_argument("--snake", action='store_true')
 args = parser.parse_args()
 threshold = args.threshold
 stream_ip = args.stream
@@ -23,6 +24,7 @@ model_file = args.model
 view = args.view
 single = args.single
 stopAt = args.stopAt
+snake = args.snake
 class LoadStreams:  # multiple IP or RTSP cameras
     def __init__(self, sources='streams.txt', img_size=640, stride=32):
         self.mode = 'stream'
@@ -131,6 +133,7 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scale
 
 def boundary_fill(img, start, boundary=0, fill=1):
   image = np.array(img)
+  print(image.shape)
   new = np.zeros_like(image)
   stack = []
   stack.append(start)
@@ -147,6 +150,24 @@ def boundary_fill(img, start, boundary=0, fill=1):
       stack.append(np.array([current[0],current[1]+1]))
   return new
 
+def get_track_length(img, start):
+  new = np.zeros_like(img)
+  print(img.shape)
+  border = False
+  current = start
+  while border == False:
+    if img[current]!=0:
+      new[current] = 1
+      current = (current[0]-1,current[1], current[2])
+    elif img[current[0], current[1]+1]!=0:
+      new[current[0], current[1]+1] = 1
+      current = (current[0], current[1]+1, current[2])
+    elif img[current[0], current[1]-1]!=0:
+      new[current[0], current[1]-1] = 1
+      current = (current[0], current[1]-1, current[2])
+    else:
+      border = True
+  return new
 
 stream = LoadStreams(stream_ip)
 dl = iter(stream)
@@ -170,6 +191,8 @@ for path, in0, img, vid_cap in tqdm(dl):
     zeros[output()[0]>threshold]=1
     if single:
       zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
+    if snake:
+      zeros = get_track_length(zeros, (200,110,0))
     if zeros[:stopAt].max()>0:
       text="Freie Fahrt"
       color=(0,255,0)
