@@ -151,23 +151,27 @@ def boundary_fill(img, start, boundary=0, fill=1):
   return new
 
 def get_track_length(img, start):
+  total_v = 0
+  total_h = 0
   new = np.zeros_like(img)
-  print(img.shape)
   border = False
   current = start
   while border == False:
     if img[current]!=0:
       new[current] = 1
+      total_v+=1
       current = (current[0]-1,current[1], current[2])
     elif img[current[0], current[1]:current[1]+5].max()!=0:
       new[current[0], current[1]+5] = 1
+      total_h+=5
       current = (current[0], current[1]+5, current[2])
     elif img[current[0], current[1]:current[1]-5]!=0:
       new[current[0], current[1]-5] = 1
+      total_h-=5
       current = (current[0], current[1]-5, current[2])
     else:
       border = True
-  return new
+  return new, total_v + np.abs(total_h)
 
 stream = LoadStreams(stream_ip)
 dl = iter(stream)
@@ -192,8 +196,12 @@ for path, in0, img, vid_cap in tqdm(dl):
     if single:
       zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
     if snake:
-      zeros = get_track_length(zeros, (220,110,0))
-    if zeros[:stopAt].max()>0:
+      zeros, total = get_track_length(zeros, (220,110,0))
+      print(total)
+      drive = total>stopAt
+    else:
+      drive = zeros[:stopAt].max()>0
+    if drive:
       text="Freie Fahrt"
       color=(0,255,0)
     else:
