@@ -14,12 +14,13 @@ parser.add_argument("--threshold", type=int, default=20)
 parser.add_argument("--stream", default="http://192.168.2.166/mjpeg/1")
 parser.add_argument("--model", default="./trainseg_quantv1.0_edgetpu.tflite")
 parser.add_argument("--view", default="segmentation")
+parser.add_argument("--single", action='store_true')
 args = parser.parse_args()
 threshold = args.threshold
 stream_ip = args.stream
 model_file = args.model
 view = args.view
-
+single = args.single
 class LoadStreams:  # multiple IP or RTSP cameras
     def __init__(self, sources='streams.txt', img_size=640, stride=32):
         self.mode = 'stream'
@@ -165,7 +166,8 @@ for path, in0, img, vid_cap in tqdm(dl):
     interpreter.invoke()
     zeros[:,:] = 0
     zeros[output()[0]>threshold]=1
-    zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
+    if single:
+      zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
     if view=="overlay":
       img = np.array(img[0])
       out = cv2.resize(zeros, dsize=(img.shape[1],img.shape[0]))
