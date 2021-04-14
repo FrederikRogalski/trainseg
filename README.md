@@ -1,6 +1,8 @@
 # trainseg
 Semantic Segmentation for detecting train rails.
 
+![image](https://user-images.githubusercontent.com/31591562/114790238-b2722100-9d84-11eb-9dcb-4b45fd40ee81.png)
+
 ## Description
 This Project is aims at autonomizing a small model train. Therefore we need to know if the rails ahead are blocked. If they are blocked the train has to stop automaticly.
 This is accomplished through the combination of a semantic segmentation model and some other clever algorithms.
