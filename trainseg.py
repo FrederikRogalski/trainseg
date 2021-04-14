@@ -126,6 +126,24 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scale
     img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  # add border
     return img, ratio, (dw, dh)
 
+def boundary_fill(img, start, boundary=0, fill=1):
+  image = np.array(img)
+  new = np.zeros_like(image)
+  stack = []
+  stack.append(start)
+  while len(stack)>0:
+    current = stack.pop()
+    if True in (current >= image.shape):
+      continue
+    if image[current[0], current[1]] != boundary:
+      image[current[0], current[1]] = fill
+      new[current[0], current[1]] = 1
+      stack.append(np.array([current[0]-1,current[1]]))
+      stack.append(np.array([current[0]+1,current[1]]))
+      stack.append(np.array([current[0],current[1]-1]))
+      stack.append(np.array([current[0],current[1]+1]))
+  return new
+
 
 stream = LoadStreams(stream_ip)
 dl = iter(stream)
@@ -147,7 +165,7 @@ for path, in0, img, vid_cap in tqdm(dl):
     interpreter.invoke()
     zeros[:,:] = 0
     zeros[output()[0]>threshold]=1
-    
+    zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
     if view=="overlay":
       img = np.array(img[0])
       out = cv2.resize(zeros, dsize=(img.shape[1],img.shape[0]))
