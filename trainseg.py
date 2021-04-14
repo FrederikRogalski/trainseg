@@ -159,10 +159,10 @@ def get_track_length(img, start):
     if img[current]!=0:
       new[current] = 1
       current = (current[0]-1,current[1], current[2])
-    elif img[current[0], current[1]+5]!=0:
+    elif img[current[0], current[1]:current[1]+5].max()!=0:
       new[current[0], current[1]+5] = 1
       current = (current[0], current[1]+5, current[2])
-    elif img[current[0], current[1]-5]!=0:
+    elif img[current[0], current[1]:current[1]-5]!=0:
       new[current[0], current[1]-5] = 1
       current = (current[0], current[1]-5, current[2])
     else:
