@@ -22,7 +22,7 @@ stream_ip = args.stream
 model_file = args.model
 view = args.view
 single = args.single
-stopAt = ergs.stopAt
+stopAt = args.stopAt
 class LoadStreams:  # multiple IP or RTSP cameras
     def __init__(self, sources='streams.txt', img_size=640, stride=32):
         self.mode = 'stream'
