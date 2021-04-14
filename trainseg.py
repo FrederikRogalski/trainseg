@@ -15,12 +15,14 @@ parser.add_argument("--stream", default="http://192.168.2.166/mjpeg/1")
 parser.add_argument("--model", default="./trainseg_quantv1.0_edgetpu.tflite")
 parser.add_argument("--view", default="segmentation")
 parser.add_argument("--single", action='store_true')
+parser.add_argument("stopAt", type=int, default=140)
 args = parser.parse_args()
 threshold = args.threshold
 stream_ip = args.stream
 model_file = args.model
 view = args.view
 single = args.single
+stopAt = ergs.stopAt
 class LoadStreams:  # multiple IP or RTSP cameras
     def __init__(self, sources='streams.txt', img_size=640, stride=32):
         self.mode = 'stream'
@@ -168,7 +170,7 @@ for path, in0, img, vid_cap in tqdm(dl):
     zeros[output()[0]>threshold]=1
     if single:
       zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
-    if zeros[:100].max()>0:
+    if zeros[:stopAt].max()>0:
       text="Freie Fahrt"
       color=(0,255,0)
     else:
