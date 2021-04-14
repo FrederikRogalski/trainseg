@@ -159,18 +159,18 @@ def get_track_length(img, start):
   while border == False:
     if img[current]!=0:
       new[current] = 1
-      total_v+=1
       current = (current[0]-1,current[1], current[2])
     elif img[current[0], current[1]:current[1]+5].max()!=0:
       new[current[0], current[1]+5] = 1
       total_h+=5
-      current = (current[0], current[1]+5, current[2])
-    elif img[current[0], current[1]-5:current[1]].max()!=0:
+      current = (current[0]-1, current[1]+5, current[2])
+    elif img[current[0], (current[1]-5):current[1]].max()!=0:
       new[current[0], current[1]-5] = 1
       total_h-=5
-      current = (current[0], current[1]-5, current[2])
+      current = (current[0]-1, current[1]-5, current[2])
     else:
       border = True
+    total_v+=1
   return new, total_v + np.abs(total_h)
 
 stream = LoadStreams(stream_ip)
