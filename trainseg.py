@@ -15,7 +15,7 @@ parser.add_argument("--stream", default="http://192.168.2.166/mjpeg/1")
 parser.add_argument("--model", default="./trainseg_quantv1.0_edgetpu.tflite")
 parser.add_argument("--view", default="segmentation")
 parser.add_argument("--single", action='store_true')
-parser.add_argument("stopAt", type=int, default=140)
+parser.add_argument("--stopAt", type=int, default=140)
 args = parser.parse_args()
 threshold = args.threshold
 stream_ip = args.stream
