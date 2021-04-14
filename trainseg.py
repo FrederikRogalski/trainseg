@@ -14,9 +14,9 @@ parser.add_argument("--threshold", type=int, default=20)
 parser.add_argument("--stream", default="http://192.168.2.166/mjpeg/1")
 parser.add_argument("--model", default="./trainseg_quantv1.0_edgetpu.tflite")
 parser.add_argument("--view", default="segmentation")
-parser.add_argument("--single", action='store_true')
-parser.add_argument("--stopAt", type=int, default=140)
-parser.add_argument("--snake", action='store_true')
+parser.add_argument("--single", action='store_true', help="Only show single rail segmentation.")
+parser.add_argument("--stopAt", type=int, default=140, help="Define when to stop.")
+parser.add_argument("--snake", action='store_true', help="let a snake travel the Segmentation to determine the wright rail and length of the rail")
 args = parser.parse_args()
 threshold = args.threshold
 stream_ip = args.stream
@@ -197,7 +197,6 @@ for path, in0, img, vid_cap in tqdm(dl):
       zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
     if snake:
       zeros, total = get_track_length(zeros, (220,110,0))
-      print(total)
       drive = total>stopAt
     else:
       drive = zeros[:stopAt].max()>0
