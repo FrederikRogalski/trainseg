@@ -168,6 +168,12 @@ for path, in0, img, vid_cap in tqdm(dl):
     zeros[output()[0]>threshold]=1
     if single:
       zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
+    if zeros[:150].max()>0:
+      text="Freie Fahrt"
+      color=(0,255,0)
+    else:
+      text="STOPP!"
+      color=(0,0,255)
     if view=="overlay":
       img = np.array(img[0])
       out = cv2.resize(zeros, dsize=(img.shape[1],img.shape[0]))
@@ -183,7 +189,7 @@ for path, in0, img, vid_cap in tqdm(dl):
     #red = masked_img[:,:,2] # get red component
     #red[mask[:,:]] = 255.0 # push red to 255 where mask is True
     #masked_img[:,:,2] = red # add red component
-    
+    cv2.putText(out,text, (100,100), 1, fontScale=2, color=color)
     cv2.imshow('camtest', out)
     key = cv2.waitKey(1) #pauses for 3 seconds before fetching next image
     if key == 27:#if ESC is pressed, exit loop
