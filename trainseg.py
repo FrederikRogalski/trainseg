@@ -168,7 +168,7 @@ for path, in0, img, vid_cap in tqdm(dl):
     zeros[output()[0]>threshold]=1
     if single:
       zeros = np.expand_dims(boundary_fill(zeros[:,:,0], np.array([200, 110]), boundary=0, fill=0),axis=-1)
-    if zeros[:150].max()>0:
+    if zeros[:100].max()>0:
       text="Freie Fahrt"
       color=(0,255,0)
     else:
