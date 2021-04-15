@@ -1,0 +1,2 @@
+model_checkpoint_path: "trainseg_weights_best"
+all_model_checkpoint_paths: "trainseg_weights_best"

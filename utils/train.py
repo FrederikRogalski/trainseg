@@ -31,6 +31,8 @@ parser.add_argument('--batch', default=20, help='Number of training examples per
 parser.add_argument('--weights', default=None, help='Path to pretrained weights.')
 parser.add_argument('--model', default=None, help='Path to saved model.')
 parser.add_argument('--toTflite', action='store_true')
+parser.add_argument('--data', default="../data/data_dir")
+parser.add_argument('--wandb', action='store_true')
 
 args = parser.parse_args()
 
@@ -39,6 +41,12 @@ batch = args.batch
 weights = args.weights
 model_path = args.model
 toTflite = args.toTflite
+data_path = args.data
+wandb_flag = args.wandb
+
+if wandb_flag:
+  import wandb
+  wandb.init(project="trainseg")
 
 class SegmentationDataset(VisionDataset):
     """A PyTorch dataset for image segmentation task.
@@ -272,7 +280,7 @@ model.compile(optimizer='adam',
               loss=tf.keras.losses.MeanSquaredError(),
               metrics=['accuracy'])
 
-dl = get_dataloader_single_folder_tf(data_dir="/home/ubuntuadm/DeepLabv3FineTuning/data_dir", batch_size=batch, fraction=0.05)
+dl = get_dataloader_single_folder_tf(data_dir=data_path, batch_size=batch, fraction=0.05)
 
 
 optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
@@ -308,6 +316,8 @@ for epoch in range(epochs):
 
       loss_metric(loss)
       t.set_postfix(loss=f"{loss_metric.result().numpy():.4f}")
+    if wandb_flag:
+      wandb.log({'epoch': epoch, 'loss_train': loss.numpy()})
     loss=0
     for data in dl['Test']:
       in0 = data['image']
@@ -318,6 +328,8 @@ for epoch in range(epochs):
         loss += mse_loss_fn(mask, reconstructed)
         loss += sum(model.losses)  # Add KLD regularization loss
     print("Test loss:", loss.numpy(), "Current best:", current_best)
+    if wandb_flag:
+      wandb.log({'epoch': epoch, 'loss_test': loss.numpy()})
     if loss.numpy() < current_best:
       print("Saving new best model!")
       model.save_weights('trainseg_weights_best')
