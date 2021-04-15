@@ -211,8 +211,8 @@ def get_dataloader_single_folder_tf(data_dir: str,
         yield data
     output_shape={'image':tf.float32,'mask':tf.float32}
     dataloaders = {
-        'Train': tf.data.Dataset.from_generator(gen_train, output_types=output_shape).batch(batch_size),
-        'Test': tf.data.Dataset.from_generator(gen_test, output_types=output_shape).batch(batch_size)
+        'Train': tf.data.Dataset.from_generator(gen_train, output_types=output_shape).shuffle(buffer_size=50).batch(batch_size),
+        'Test': tf.data.Dataset.from_generator(gen_test, output_types=output_shape).shuffle(buffer_size=50).batch(batch_size)
     }
     #dataloaders = {
     #    x: DataLoader(image_datasets[x],
@@ -334,6 +334,8 @@ for epoch in range(epochs):
       print("Saving new best model!")
       model.save_weights('trainseg_weights_best')
       current_best = loss.numpy()
+    if epoch %20:
+      model.save_weights('trainseg_weights_last')
   dl_len=step
 
 print("\nSaving Model")
