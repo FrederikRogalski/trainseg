@@ -1,0 +1,33 @@
+{
+    "os": "Linux-5.10.0-0.bpo.3-amd64-x86_64-with-glibc2.29",
+    "python": "3.8.5",
+    "heartbeatAt": "2021-04-16T10:05:55.598398",
+    "startedAt": "2021-04-16T10:05:52.472676",
+    "docker": null,
+    "gpu": "Tesla V100-SXM2-32GB",
+    "gpu_count": 1,
+    "cpu_count": 40,
+    "cuda": null,
+    "args": [
+        "--model",
+        "trainseg_last",
+        "--epochs",
+        "50",
+        "--wandb",
+        "--batch",
+        "30",
+        "--toTflite"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePath": "utils/train.py",
+    "git": {
+        "remote": "https://github.com/FrederikRogalski/trainseg",
+        "commit": "875d759215f94d22e502bde6538a71b31767cc11"
+    },
+    "email": "frederik@musikschule.de",
+    "root": "/home/ubuntuadm/trainseg",
+    "host": "0aee5cb5180a",
+    "username": "ubuntuadm",
+    "executable": "/usr/bin/python3"
+}

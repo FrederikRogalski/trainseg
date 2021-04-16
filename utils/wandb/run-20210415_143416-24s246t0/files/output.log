@@ -1,0 +1,1 @@
+This property should not be used in TensorFlow 2.0, as updates are applied automatically.

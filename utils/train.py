@@ -1,4 +1,6 @@
 #%tensorflow_version 1.x
+from torchvision.datasets.vision import VisionDataset
+
 import tensorflow as tf
 from tensorflow.keras import layers
 import numpy as np
@@ -6,9 +8,7 @@ from tqdm import tqdm, trange
 import cv2
 
 from pathlib import Path
-
-from torch.utils.data import DataLoader
-from torchvision import transforms
+from deeplab import DeepLabV3Plus
 
 """
 Author: Manpreet Singh Minhas
@@ -19,9 +19,11 @@ from typing import Any, Callable, Optional
 
 import numpy as np
 from PIL import Image
-from torchvision.datasets.vision import VisionDataset
+print('done')
+
 
 import argparse
+
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 
@@ -276,6 +278,16 @@ def unet_model(output_channels):
   return tf.keras.Model(inputs=inputs, outputs=x)
 
 model = unet_model(OUTPUT_CHANNELS)
+
+
+model = DeepLabV3Plus(224,224,1)
+for layer in model.layers:
+  if isinstance(layer, tf.keras.layers.BatchNormalization):
+    layer.momentum = 0.9997
+    layer.epsilon = 1e-5
+  elif isinstance(layer, tf.keras.layers.Conv2D):
+    layer.kernel_regularizer = tf.keras.regularizers.l2(1e-4)
+
 model.compile(optimizer='adam',
               loss=tf.keras.losses.MeanSquaredError(),
               metrics=['accuracy'])
