@@ -34,6 +34,7 @@ parser.add_argument('--toTflite', action='store_true')
 parser.add_argument('--data', default="../data/data_dir")
 parser.add_argument('--wandb', action='store_true')
 parser.add_argument('--modelArch', default="custom")
+parser.add_argument('--size', default=320. type=int)
 
 args = parser.parse_args()
 
@@ -45,6 +46,8 @@ toTflite = args.toTflite
 data_path = args.data
 wandb_flag = args.wandb
 modelArch = args.modelArch
+input_size = args.size
+
 if wandb_flag:
   import wandb
   wandb.init(project="trainseg")
@@ -228,7 +231,7 @@ def get_dataloader_single_folder_tf(data_dir: str,
 OUTPUT_CHANNELS = 1
 
 if modelArch=="custom":
-  base_model = tf.keras.applications.MobileNetV2(input_shape=[320, 320, 3], include_top=False)
+  base_model = tf.keras.applications.MobileNetV2(input_shape=[input_size, input_size, 3], include_top=False)
 
   # Use the activations of these layers
   layer_names = [
@@ -255,7 +258,7 @@ if modelArch=="custom":
   ]
 
   def unet_model(output_channels):
-    inputs = tf.keras.layers.Input(shape=[320, 320, 3])
+    inputs = tf.keras.layers.Input(shape=[input_size, input_size, 3])
 
     # Downsampling through the model
     skips = down_stack(inputs)
@@ -280,7 +283,7 @@ if modelArch=="custom":
   model = unet_model(OUTPUT_CHANNELS)
 elif modelArch=="deeplab":
   from deeplab import DeepLabV3Plus
-  model = DeepLabV3Plus(224,224,1)
+  model = DeepLabV3Plus(input_size,input_size,1)
 
   for layer in model.layers:
     if isinstance(layer, tf.keras.layers.BatchNormalization):
