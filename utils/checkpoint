@@ -1,2 +1,0 @@
-model_checkpoint_path: "trainseg_weights_last"
-all_model_checkpoint_paths: "trainseg_weights_last"

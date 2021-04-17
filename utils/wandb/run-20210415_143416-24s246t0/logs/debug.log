@@ -20,3 +20,83 @@ config: {}
 2021-04-15 14:34:19,159 INFO    MainThread:10932 [wandb_run.py:_redirect():1376] Redirecting console.
 2021-04-15 14:34:19,167 INFO    MainThread:10932 [wandb_run.py:_redirect():1438] Redirects installed.
 2021-04-15 14:34:19,167 INFO    MainThread:10932 [wandb_init.py:init():546] run started, returning control to user process
+2021-04-15 18:23:49,880 INFO    MainThread:10932 [wandb_run.py:_atexit_cleanup():1494] got exitcode: 0
+2021-04-15 18:23:49,950 INFO    MainThread:10932 [wandb_run.py:_restore():1466] restore
+2021-04-15 18:23:52,160 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 1
+}
+pusher_stats {
+  uploaded_bytes: 813
+  total_bytes: 813
+}
+
+2021-04-15 18:23:52,746 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 3
+}
+pusher_stats {
+  uploaded_bytes: 813
+  total_bytes: 1192
+}
+
+2021-04-15 18:23:53,074 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3565
+  total_bytes: 3565
+}
+
+2021-04-15 18:23:53,178 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3565
+  total_bytes: 3565
+}
+
+2021-04-15 18:23:53,280 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3565
+  total_bytes: 3565
+}
+
+2021-04-15 18:23:53,387 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3565
+  total_bytes: 3565
+}
+
+2021-04-15 18:23:53,490 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3565
+  total_bytes: 3565
+}
+
+2021-04-15 18:23:53,593 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3565
+  total_bytes: 3565
+}
+
+2021-04-15 18:23:53,697 INFO    MainThread:10932 [wandb_run.py:_wait_for_finish():1616] got exit ret: done: true
+exit_result {
+}
+file_counts {
+  wandb_count: 5
+}
+pusher_stats {
+  uploaded_bytes: 3565
+  total_bytes: 3565
+}
+
+2021-04-15 18:23:55,124 INFO    MainThread:10932 [wandb_run.py:_show_summary():1771] rendering summary
+2021-04-15 18:23:55,125 INFO    MainThread:10932 [wandb_run.py:_show_history():1809] rendering history
+2021-04-15 18:23:55,126 INFO    MainThread:10932 [wandb_run.py:_show_files():1838] logging synced files

@@ -1,3 +1,9 @@
 #data/
 legacy/
 .DS_Store
+variables.data-00001-of-00002
+trainseg_weights_best.data-00001-of-00002
+trainseg_weights_last.data-00001-of-00002
+/utils/variables.data-00001-of-00002
+trainseg_last/
+trainseg_quant.tflite

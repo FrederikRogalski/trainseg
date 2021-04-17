@@ -1,4 +1,6 @@
 #%tensorflow_version 1.x
+from torchvision.datasets.vision import VisionDataset
+
 import tensorflow as tf
 from tensorflow.keras import layers
 import numpy as np
@@ -6,9 +8,6 @@ from tqdm import tqdm, trange
 import cv2
 
 from pathlib import Path
-
-from torch.utils.data import DataLoader
-from torchvision import transforms
 
 """
 Author: Manpreet Singh Minhas
@@ -19,9 +18,10 @@ from typing import Any, Callable, Optional
 
 import numpy as np
 from PIL import Image
-from torchvision.datasets.vision import VisionDataset
+
 
 import argparse
+
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 
@@ -33,6 +33,8 @@ parser.add_argument('--model', default=None, help='Path to saved model.')
 parser.add_argument('--toTflite', action='store_true')
 parser.add_argument('--data', default="../data/data_dir")
 parser.add_argument('--wandb', action='store_true')
+parser.add_argument('--modelArch', default="custom")
+parser.add_argument('--size', default=320. type=int)
 
 args = parser.parse_args()
 
@@ -43,6 +45,8 @@ model_path = args.model
 toTflite = args.toTflite
 data_path = args.data
 wandb_flag = args.wandb
+modelArch = args.modelArch
+input_size = args.size
 
 if wandb_flag:
   import wandb
@@ -226,56 +230,70 @@ def get_dataloader_single_folder_tf(data_dir: str,
 
 OUTPUT_CHANNELS = 1
 
-base_model = tf.keras.applications.MobileNetV2(input_shape=[224, 224, 3], include_top=False)
+if modelArch=="custom":
+  base_model = tf.keras.applications.MobileNetV2(input_shape=[input_size, input_size, 3], include_top=False)
 
-# Use the activations of these layers
-layer_names = [
+  # Use the activations of these layers
+  layer_names = [
     'block_1_expand_relu',   # 64x64
     'block_3_expand_relu',   # 32x32
     'block_6_expand_relu',   # 16x16
     'block_13_expand_relu',  # 8x8
     'block_16_project',      # 4x4
-]
-base_model_outputs = [base_model.get_layer(name).output for name in layer_names]
+  ]
+  base_model_outputs = [base_model.get_layer(name).output for name in layer_names]
 
-# Create the feature extraction model
-down_stack = tf.keras.Model(inputs=base_model.input, outputs=base_model_outputs)
+  # Create the feature extraction model
+  down_stack = tf.keras.Model(inputs=base_model.input, outputs=base_model_outputs)
 
-down_stack.trainable = False
+  down_stack.trainable = False
 
-from tensorflow_examples.models.pix2pix import pix2pix
+  from tensorflow_examples.models.pix2pix import pix2pix
 
-up_stack = [
+  up_stack = [
     pix2pix.upsample(512, 3),  # 4x4 -> 8x8
     pix2pix.upsample(256, 3),  # 8x8 -> 16x16
     pix2pix.upsample(128, 3),  # 16x16 -> 32x32
     pix2pix.upsample(64, 3),   # 32x32 -> 64x64
-]
+  ]
 
-def unet_model(output_channels):
-  inputs = tf.keras.layers.Input(shape=[224, 224, 3])
+  def unet_model(output_channels):
+    inputs = tf.keras.layers.Input(shape=[input_size, input_size, 3])
 
-  # Downsampling through the model
-  skips = down_stack(inputs)
-  x = skips[-1]
-  skips = reversed(skips[:-1])
+    # Downsampling through the model
+    skips = down_stack(inputs)
+    x = skips[-1]
+    skips = reversed(skips[:-1])
 
-  # Upsampling and establishing the skip connections
-  for up, skip in zip(up_stack, skips):
-    x = up(x)
-    concat = tf.keras.layers.Concatenate()
-    x = concat([x, skip])
+    # Upsampling and establishing the skip connections
+    for up, skip in zip(up_stack, skips):
+      x = up(x)
+      concat = tf.keras.layers.Concatenate()
+      x = concat([x, skip])
 
-  # This is the last layer of the model
-  last = tf.keras.layers.Conv2DTranspose(
+    # This is the last layer of the model
+    last = tf.keras.layers.Conv2DTranspose(
       output_channels, 3, strides=2,
       padding='same')  #64x64 -> 128x128
 
-  x = last(x)
+    x = last(x)
 
-  return tf.keras.Model(inputs=inputs, outputs=x)
+    return tf.keras.Model(inputs=inputs, outputs=x)
 
-model = unet_model(OUTPUT_CHANNELS)
+  model = unet_model(OUTPUT_CHANNELS)
+elif modelArch=="deeplab":
+  from deeplab import DeepLabV3Plus
+  model = DeepLabV3Plus(input_size,input_size,1)
+
+  for layer in model.layers:
+    if isinstance(layer, tf.keras.layers.BatchNormalization):
+      layer.momentum = 0.9997
+      layer.epsilon = 1e-5
+    elif isinstance(layer, tf.keras.layers.Conv2D):
+      layer.kernel_regularizer = tf.keras.regularizers.l2(1e-4)
+else:
+  raise NotImplementedError(f"Model Architecture '{modelArch}' is not implemented.")
+
 model.compile(optimizer='adam',
               loss=tf.keras.losses.MeanSquaredError(),
               metrics=['accuracy'])
@@ -296,6 +314,8 @@ if model_path!=None:
   model = tf.keras.models.load_model(model_path)
 if weights!=None:
   model.load_weights('trainseg_weights_best')
+
+print(model.summary())
 
 for epoch in range(epochs):
 
@@ -351,6 +371,8 @@ if toTflite:
   converter.experimental_new_converter = False
   converter.optimizations = [tf.lite.Optimize.DEFAULT]
   converter.representative_dataset = representative_dataset
+  #converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+  #converter.target_spec.supported_types = [tf.int8]
   tflite_quant_model = converter.convert()
   
   with open('trainseg_quant.tflite', 'wb') as f:
