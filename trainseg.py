@@ -16,6 +16,7 @@ parser.add_argument("--single", action='store_true', help="Only show single rail
 parser.add_argument("--stopAt", type=int, default=140, help="Define when to stop.")
 parser.add_argument("--snake", action='store_true', help="let a snake travel the Segmentation to determine the wright rail and length of the rail")
 parser.add_argument("--tpu", action='store_true', help="Use the EdgeTpu")
+parser.add_argument("--toVideo", action='store_true', help="Save inference to video")
 args = parser.parse_args()
 threshold = args.threshold
 stream_ip = args.stream
@@ -25,6 +26,7 @@ single = args.single
 stopAt = args.stopAt
 snake = args.snake
 tpu = args.tpu
+toVideo = args.toVideo
 
 if tpu:
   from pycoral.utils import edgetpu
@@ -183,11 +185,11 @@ def get_track_length(img, start):
 stream = LoadStreams(stream_ip)
 dl = iter(stream)
 print("Stream intitialized")
-if view != "toVideo":
+if not toVideo:
     cv2.namedWindow("camtest")
     cv2.startWindowThread()
 else:
-  video = cv2.VideoWriter('inference.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (320,320))
+  video = cv2.VideoWriter('inference.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (360,640))
 if tpu:
   interpreter = edgetpu.make_interpreter(model_file)
 else:
@@ -248,7 +250,7 @@ for path, in0, img, vid_cap in tqdm(dl):
     #red = masked_img[:,:,2] # get red component
     #red[mask[:,:]] = 255.0 # push red to 255 where mask is True
     #masked_img[:,:,2] = red # add red component
-    if view!="toVideo":
+    if not toVideo:
       cv2.putText(out,text, (100,100), 1, fontScale=2, color=color)
       cv2.imshow('camtest', out)
       key = cv2.waitKey(1) #pauses for 3 seconds before fetching next image
