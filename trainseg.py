@@ -208,6 +208,7 @@ print(f"Model input size: {size}")
 output = interpreter.tensor(interpreter.get_output_details()[0]["index"])
 zeros = np.zeros((size[0],size[1],1))
 print("Starting Inference")
+i=0
 for path, in0, img, vid_cap in tqdm(dl):
     in0 = np.moveaxis(in0[0], 0, -1)
     if tpu:
@@ -256,3 +257,7 @@ for path, in0, img, vid_cap in tqdm(dl):
     else:
       print("Writing image with size:", out.shape)
       video.write(np.array(out, dtype=np.uint8))
+      i+=1
+      if i>10:
+        break
+video.release()
