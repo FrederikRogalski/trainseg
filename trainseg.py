@@ -187,7 +187,7 @@ if view != "toVideo":
     cv2.namedWindow("camtest")
     cv2.startWindowThread()
 else:
-  video = cv2.VideoWriter('inference.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (320,240))
+  video = cv2.VideoWriter('inference.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (320,320))
 if tpu:
   interpreter = edgetpu.make_interpreter(model_file)
 else:
