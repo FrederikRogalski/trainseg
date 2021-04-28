@@ -1,0 +1,23 @@
+2021-04-28 14:38:21,503 INFO    MainThread:13901 [internal.py:wandb_internal():88] W&B internal server running at pid: 13901, started at: 2021-04-28 14:38:21.503488
+2021-04-28 14:38:21,507 DEBUG   SenderThread:13901 [sender.py:send():160] send: header
+2021-04-28 14:38:21,508 INFO    WriterThread:13901 [datastore.py:open_for_write():77] open: /home/ubuntuadm/trainseg/utils/wandb/run-20210428_143820-qcnab6ex/run-qcnab6ex.wandb
+2021-04-28 14:38:21,508 DEBUG   HandlerThread:13901 [handler.py:handle_request():120] handle_request: check_version
+2021-04-28 14:38:21,508 DEBUG   SenderThread:13901 [sender.py:send():160] send: request
+2021-04-28 14:38:21,508 DEBUG   SenderThread:13901 [sender.py:send_request():169] send_request: check_version
+2021-04-28 14:38:21,952 DEBUG   SenderThread:13901 [sender.py:send():160] send: run
+2021-04-28 14:38:22,221 DEBUG   HandlerThread:13901 [handler.py:handle_request():120] handle_request: run_start
+2021-04-28 14:38:22,226 INFO    SenderThread:13901 [sender.py:_start_run_threads():651] run started: qcnab6ex with start time 1619620700
+2021-04-28 14:38:22,227 DEBUG   SenderThread:13901 [sender.py:send():160] send: summary
+2021-04-28 14:38:22,227 INFO    SenderThread:13901 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2021-04-28 14:38:25,179 WARNING MainThread:13901 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2021-04-28 14:38:28,961 DEBUG   HandlerThread:13901 [meta.py:__init__():34] meta init
+2021-04-28 14:38:28,962 DEBUG   HandlerThread:13901 [meta.py:__init__():48] meta init done
+2021-04-28 14:38:28,962 DEBUG   HandlerThread:13901 [meta.py:probe():190] probe
+2021-04-28 14:38:28,969 DEBUG   HandlerThread:13901 [meta.py:_setup_git():180] setup git
+2021-04-28 14:38:28,997 DEBUG   HandlerThread:13901 [meta.py:_setup_git():187] setup git done
+2021-04-28 14:38:28,997 DEBUG   HandlerThread:13901 [meta.py:_save_pip():52] save pip
+2021-04-28 14:38:28,998 DEBUG   HandlerThread:13901 [meta.py:_save_pip():66] save pip done
+2021-04-28 14:38:28,998 DEBUG   HandlerThread:13901 [meta.py:probe():231] probe done
+2021-04-28 14:38:29,021 DEBUG   SenderThread:13901 [sender.py:send():160] send: files
+2021-04-28 14:38:29,021 INFO    SenderThread:13901 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2021-04-28 14:38:57,193 DEBUG   SenderThread:13901 [sender.py:send():160] send: stats

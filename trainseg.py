@@ -3,9 +3,7 @@ import os
 import cv2
 from threading import Thread
 import time
-from matplotlib import pyplot as plt
-from pycoral.utils import edgetpu
-from pycoral.adapters import common
+
 from tqdm import tqdm
 import argparse
 
@@ -17,6 +15,7 @@ parser.add_argument("--view", default="segmentation")
 parser.add_argument("--single", action='store_true', help="Only show single rail segmentation.")
 parser.add_argument("--stopAt", type=int, default=140, help="Define when to stop.")
 parser.add_argument("--snake", action='store_true', help="let a snake travel the Segmentation to determine the wright rail and length of the rail")
+parser.add_argument("--tpu", action='store_true', help="Use the EdgeTpu")
 args = parser.parse_args()
 threshold = args.threshold
 stream_ip = args.stream
@@ -25,6 +24,14 @@ view = args.view
 single = args.single
 stopAt = args.stopAt
 snake = args.snake
+tpu = args.tpu
+
+if tpu:
+  from pycoral.utils import edgetpu
+  from pycoral.adapters import common
+else:
+  import tensorflow as tf
+
 class LoadStreams:  # multiple IP or RTSP cameras
     def __init__(self, sources='streams.txt', img_size=640, stride=32):
         self.mode = 'stream'
@@ -176,20 +183,39 @@ def get_track_length(img, start):
 stream = LoadStreams(stream_ip)
 dl = iter(stream)
 print("Stream intitialized")
-cv2.namedWindow("camtest")
-cv2.startWindowThread()
+if view != "toVideo":
+    cv2.namedWindow("camtest")
+    cv2.startWindowThread()
+else:
+  video = cv2.VideoWriter('inference.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (320,240))
+if tpu:
+  interpreter = edgetpu.make_interpreter(model_file)
+else:
+  interpreter = tf.lite.Interpreter(model_file)
 
-
-interpreter = edgetpu.make_interpreter(model_file)
 interpreter.allocate_tensors()
-size = common.input_size(interpreter)
+
+if tpu:
+  size = common.input_size(interpreter)
+else:
+  input_details = interpreter.get_input_details()
+  input_shape = input_details[0]['shape']
+  size = input_shape[1:]
+  print(size)
+  size = (size[0], size[1])
+
 print(f"Model input size: {size}")
 output = interpreter.tensor(interpreter.get_output_details()[0]["index"])
-zeros = np.zeros((224,224,1))
-
+zeros = np.zeros((size[0],size[1],1))
+print("Starting Inference")
 for path, in0, img, vid_cap in tqdm(dl):
     in0 = np.moveaxis(in0[0], 0, -1)
-    common.set_input(interpreter, cv2.resize(in0, dsize=size))
+    if tpu:
+      common.set_input(interpreter, cv2.resize(in0, dsize=size))
+    else:
+      in1 = cv2.resize(np.array(in0, dtype=np.float32), dsize=size)
+      print(in1.shape, input_details[0]['shape'])
+      interpreter.set_tensor(input_details[0]['index'], np.expand_dims(in1,axis=0))
     interpreter.invoke()
     zeros[:,:] = 0
     zeros[output()[0]>threshold]=1
@@ -221,8 +247,12 @@ for path, in0, img, vid_cap in tqdm(dl):
     #red = masked_img[:,:,2] # get red component
     #red[mask[:,:]] = 255.0 # push red to 255 where mask is True
     #masked_img[:,:,2] = red # add red component
-    cv2.putText(out,text, (100,100), 1, fontScale=2, color=color)
-    cv2.imshow('camtest', out)
-    key = cv2.waitKey(1) #pauses for 3 seconds before fetching next image
-    if key == 27:#if ESC is pressed, exit loop
+    if view!="toVideo":
+      cv2.putText(out,text, (100,100), 1, fontScale=2, color=color)
+      cv2.imshow('camtest', out)
+      key = cv2.waitKey(1) #pauses for 3 seconds before fetching next image
+      if key == 27:
         break
+    else:
+      print("Writing image with size:", out.shape)
+      video.write(np.array(out, dtype=np.uint8))

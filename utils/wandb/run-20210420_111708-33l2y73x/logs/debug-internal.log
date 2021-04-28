@@ -1,0 +1,45 @@
+2021-04-20 11:17:09,930 INFO    MainThread:12889 [internal.py:wandb_internal():88] W&B internal server running at pid: 12889, started at: 2021-04-20 11:17:09.930338
+2021-04-20 11:17:09,934 DEBUG   SenderThread:12889 [sender.py:send():160] send: header
+2021-04-20 11:17:09,935 INFO    WriterThread:12889 [datastore.py:open_for_write():77] open: /home/ubuntuadm/trainseg/utils/wandb/run-20210420_111708-33l2y73x/run-33l2y73x.wandb
+2021-04-20 11:17:09,935 DEBUG   HandlerThread:12889 [handler.py:handle_request():120] handle_request: check_version
+2021-04-20 11:17:09,936 DEBUG   SenderThread:12889 [sender.py:send():160] send: request
+2021-04-20 11:17:09,936 DEBUG   SenderThread:12889 [sender.py:send_request():169] send_request: check_version
+2021-04-20 11:17:10,005 DEBUG   SenderThread:12889 [sender.py:send():160] send: run
+2021-04-20 11:17:10,255 DEBUG   HandlerThread:12889 [handler.py:handle_request():120] handle_request: run_start
+2021-04-20 11:17:10,621 INFO    SenderThread:12889 [sender.py:_start_run_threads():651] run started: 33l2y73x with start time 1618917429
+2021-04-20 11:17:10,621 DEBUG   SenderThread:12889 [sender.py:send():160] send: summary
+2021-04-20 11:17:10,621 INFO    SenderThread:12889 [sender.py:_save_file():781] saving file wandb-summary.json with policy end
+2021-04-20 11:17:11,683 DEBUG   HandlerThread:12889 [meta.py:__init__():34] meta init
+2021-04-20 11:17:11,683 DEBUG   HandlerThread:12889 [meta.py:__init__():48] meta init done
+2021-04-20 11:17:11,683 DEBUG   HandlerThread:12889 [meta.py:probe():190] probe
+2021-04-20 11:17:11,695 DEBUG   HandlerThread:12889 [meta.py:_setup_git():180] setup git
+2021-04-20 11:17:11,717 DEBUG   HandlerThread:12889 [meta.py:_setup_git():187] setup git done
+2021-04-20 11:17:11,717 DEBUG   HandlerThread:12889 [meta.py:_save_pip():52] save pip
+2021-04-20 11:17:11,717 DEBUG   HandlerThread:12889 [meta.py:_save_pip():66] save pip done
+2021-04-20 11:17:11,717 DEBUG   HandlerThread:12889 [meta.py:probe():231] probe done
+2021-04-20 11:17:11,725 DEBUG   SenderThread:12889 [sender.py:send():160] send: files
+2021-04-20 11:17:11,725 INFO    SenderThread:12889 [sender.py:_save_file():781] saving file wandb-metadata.json with policy now
+2021-04-20 11:17:11,729 DEBUG   HandlerThread:12889 [handler.py:handle_request():120] handle_request: status
+2021-04-20 11:17:11,729 DEBUG   SenderThread:12889 [sender.py:send():160] send: request
+2021-04-20 11:17:11,729 DEBUG   SenderThread:12889 [sender.py:send_request():169] send_request: status
+2021-04-20 11:17:28,173 DEBUG   HandlerThread:12889 [handler.py:handle_request():120] handle_request: status
+2021-04-20 11:17:28,174 DEBUG   SenderThread:12889 [sender.py:send():160] send: request
+2021-04-20 11:17:28,174 DEBUG   SenderThread:12889 [sender.py:send_request():169] send_request: status
+2021-04-20 11:17:39,864 DEBUG   SenderThread:12889 [sender.py:send():160] send: stats
+2021-04-20 11:17:43,333 DEBUG   HandlerThread:12889 [handler.py:handle_request():120] handle_request: status
+2021-04-20 11:17:43,333 DEBUG   SenderThread:12889 [sender.py:send():160] send: request
+2021-04-20 11:17:43,333 DEBUG   SenderThread:12889 [sender.py:send_request():169] send_request: status
+2021-04-20 11:17:58,491 DEBUG   HandlerThread:12889 [handler.py:handle_request():120] handle_request: status
+2021-04-20 11:17:58,491 DEBUG   SenderThread:12889 [sender.py:send():160] send: request
+2021-04-20 11:17:58,491 DEBUG   SenderThread:12889 [sender.py:send_request():169] send_request: status
+2021-04-20 11:18:10,065 DEBUG   SenderThread:12889 [sender.py:send():160] send: stats
+2021-04-20 11:18:13,653 DEBUG   HandlerThread:12889 [handler.py:handle_request():120] handle_request: status
+2021-04-20 11:18:13,653 DEBUG   SenderThread:12889 [sender.py:send():160] send: request
+2021-04-20 11:18:13,654 DEBUG   SenderThread:12889 [sender.py:send_request():169] send_request: status
+2021-04-20 11:18:21,969 WARNING MainThread:12889 [internal.py:wandb_internal():146] Internal process interrupt: 1
+2021-04-20 11:18:22,831 WARNING MainThread:12889 [internal.py:wandb_internal():146] Internal process interrupt: 2
+2021-04-20 11:18:22,832 ERROR   MainThread:12889 [internal.py:wandb_internal():149] Internal process interrupted.
+2021-04-20 11:18:23,068 INFO    WriterThread:12889 [datastore.py:close():258] close: /home/ubuntuadm/trainseg/utils/wandb/run-20210420_111708-33l2y73x/run-33l2y73x.wandb
+2021-04-20 11:18:23,664 INFO    HandlerThread:12889 [handler.py:finish():624] shutting down handler
+2021-04-20 11:18:23,809 INFO    SenderThread:12889 [sender.py:finish():884] shutting down sender
+2021-04-20 11:18:25,759 INFO    MainThread:12889 [internal.py:handle_exit():78] Internal process exited

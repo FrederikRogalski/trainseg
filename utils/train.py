@@ -18,10 +18,11 @@ from typing import Any, Callable, Optional
 
 import numpy as np
 from PIL import Image
-
+import os
 
 import argparse
-
+from datetime import datetime
+import time
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 
@@ -34,8 +35,9 @@ parser.add_argument('--toTflite', action='store_true')
 parser.add_argument('--data', default="../data/data_dir")
 parser.add_argument('--wandb', action='store_true')
 parser.add_argument('--modelArch', default="custom")
-parser.add_argument('--size', default=320. type=int)
-
+parser.add_argument('--size', default=320, type=int)
+parser.add_argument('--toTpu', action='store_true', help='Set this flag if you want to compile a model for the Edge TPU')
+parser.add_argument('--oldConv', action='store_true', help='Use old tflite converter TOCO')
 args = parser.parse_args()
 
 epochs = args.epochs
@@ -47,10 +49,17 @@ data_path = args.data
 wandb_flag = args.wandb
 modelArch = args.modelArch
 input_size = args.size
+if args.toTpu:
+  toTflite = True
+  toTpu = True
+else:
+  toTpu = False
+oldConv = args.oldConv
 
 if wandb_flag:
   import wandb
-  wandb.init(project="trainseg")
+  time.sleep(1)
+  wandb.init(project="trainseg", name=f"{modelArch}-{input_size}x{input_size}")
 
 class SegmentationDataset(VisionDataset):
     """A PyTorch dataset for image segmentation task.
@@ -167,8 +176,8 @@ class SegmentationDataset(VisionDataset):
             if self.transforms:
                 sample["image"] = self.transforms(sample["image"])
                 sample["mask"] = self.transforms(sample["mask"])
-            sample["image"] = cv2.resize(np.array(sample["image"]), dsize=(224,224))
-            sample["mask"] = cv2.resize(np.array(sample["mask"]), dsize=(224,224))
+            sample["image"] = cv2.resize(np.array(sample["image"]), dsize=(input_size,input_size))
+            sample["mask"] = cv2.resize(np.array(sample["mask"]), dsize=(input_size,input_size))
             if flip_this == True:
                 sample['image'] = tf.image.flip_left_right(sample['image'])
                 sample['mask'] = tf.image.flip_left_right(np.expand_dims(sample['mask'], axis=2))[:,:,0]
@@ -315,7 +324,7 @@ if model_path!=None:
 if weights!=None:
   model.load_weights('trainseg_weights_best')
 
-print(model.summary())
+print("Model loaded")
 
 for epoch in range(epochs):
 
@@ -363,17 +372,22 @@ model.save('trainseg_last')
 if toTflite:
   def representative_dataset():
     for _ in range(100):
-      data = np.random.rand(1, 224, 224, 3)*255
+      data = np.random.rand(1, input_size, input_size, 3)*255
       yield [data.astype(np.float32)]
   
   print("\nConverting to tflite")
   converter = tf.lite.TFLiteConverter.from_saved_model("trainseg_last")
-  converter.experimental_new_converter = False
-  converter.optimizations = [tf.lite.Optimize.DEFAULT]
-  converter.representative_dataset = representative_dataset
+  if oldConv:
+    converter.experimental_new_converter = False
+  if toTpu:
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    converter.representative_dataset = representative_dataset
   #converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
   #converter.target_spec.supported_types = [tf.int8]
   tflite_quant_model = converter.convert()
   
   with open('trainseg_quant.tflite', 'wb') as f:
     f.write(tflite_quant_model)
+
+if toTpu:
+  os.system('edgetpu_compiler trainseg_quant.tflite')
