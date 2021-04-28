@@ -259,7 +259,8 @@ for path, in0, img, vid_cap in tqdm(dl):
     else:
       print("Writing image with size:", out.shape)
       video.write(np.array(out, dtype=np.uint8))
+      cv2.imwrite(f"./images/image{i}.jpg", np.array(out,dtype=np.uint8))
       i+=1
-      if i>100:
+      if i>10:
         break
 video.release()
