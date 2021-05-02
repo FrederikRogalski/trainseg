@@ -36,8 +36,9 @@ parser.add_argument('--data', default="../data/data_dir")
 parser.add_argument('--wandb', action='store_true')
 parser.add_argument('--modelArch', default="custom")
 parser.add_argument('--size', default=320, type=int)
-parser.add_argument('--toTpu', action='store_true', help='Set this flag if you want to compile a model for the Edge TPU')
-parser.add_argument('--oldConv', action='store_true', help='Use old tflite converter TOCO')
+parser.add_argument('--toTpu', action='store_true', help='Set this flag if you want to compile a model for the Edge TPU.')
+parser.add_argument('--oldConv', action='store_true', help='Use old tflite converter TOCO.')
+parser.add_argument('--seed', default=1337, help="Seed for the random split between train and test.")
 args = parser.parse_args()
 
 epochs = args.epochs
@@ -49,6 +50,7 @@ data_path = args.data
 wandb_flag = args.wandb
 modelArch = args.modelArch
 input_size = args.size
+seed = args.seed
 if args.toTpu:
   toTflite = True
   toTpu = True
@@ -207,7 +209,7 @@ def get_dataloader_single_folder_tf(data_dir: str,
         x: SegmentationDataset(data_dir,
                                image_folder=image_folder,
                                mask_folder=mask_folder,
-                               seed=100,
+                               seed=seed,
                                fraction=fraction,
                                subset=x,
                                transforms=data_transforms)
